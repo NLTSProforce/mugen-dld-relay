@@ -33,11 +33,11 @@ import json
 import statistics
 import sys
 import traceback
-import urllib.error
 import urllib.parse
-import urllib.request
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
+
+import requests  # preinstalled on GitHub Actions runners
 
 PORTAL = "https://data.dubai"
 DATASET_ID = 470061  # "Real Estate Transactions" by Dubai Land Department
@@ -50,6 +50,7 @@ HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
                   "(KHTML, like Gecko) Chrome/126.0 Safari/537.36",
     "Accept": "application/json, text/plain, */*",
+    "Accept-Language": "en-US,en;q=0.9",
     "Referer": f"{PORTAL}/en/l/{DATASET_ID}",
 }
 
@@ -58,18 +59,26 @@ def log(*a):
     print(*a, flush=True)
 
 
-def http(url, timeout=300):
-    req = urllib.request.Request(url, headers=HEADERS)
-    try:
-        return urllib.request.urlopen(req, timeout=timeout)
-    except urllib.error.HTTPError as e:
-        body = ""
-        try:
-            body = e.read(1500).decode(errors="replace")
-        except Exception:
-            pass
-        log(f"HTTP {e.code} from {url[:160]}\n  body: {body}")
-        raise
+SESSION = requests.Session()
+SESSION.headers.update(HEADERS)
+
+
+def warm_up():
+    """Visit the dataset page first like a normal client, so the session
+    carries the portal's cookies before any API call."""
+    url = f"{PORTAL}/en/l/{DATASET_ID}"
+    r = SESSION.get(url, timeout=120,
+                    headers={"Accept": "text/html,application/xhtml+xml"})
+    log(f"warm-up GET {url} -> {r.status_code}, {len(r.content)} bytes, "
+        f"cookies: {sorted(c.name for c in SESSION.cookies)}")
+
+
+def http(url, timeout=300, stream=False):
+    r = SESSION.get(url, timeout=timeout, stream=stream)
+    if r.status_code != 200:
+        log(f"HTTP {r.status_code} from {url[:160]}\n  body: {r.text[:1200]}")
+        r.raise_for_status()
+    return r
 
 
 # ---- discover export file URLs ----------------------------------------------
@@ -88,10 +97,14 @@ def walk_urls(node, found):
 
 
 def discover_csv_urls():
-    with http(LIST_URL, timeout=120) as r:
-        raw = r.read().decode(errors="replace")
+    r = http(LIST_URL, timeout=120)
+    raw = r.text
     log(f"file-list response: {len(raw)} bytes")
-    payload = json.loads(raw)
+    try:
+        payload = json.loads(raw)
+    except json.JSONDecodeError:
+        log("file-list response was not JSON; body starts with:\n" + raw[:800])
+        raise
     urls = []
     walk_urls(payload, urls)
     # absolutize + dedupe, keep order
@@ -120,19 +133,20 @@ def collect_rows(csv_urls, needed: set):
     keys = {d.isoformat(): d for d in needed}
     for url in csv_urls:
         log(f"streaming {url[:140]} ...")
-        with http(url, timeout=3600) as r:
-            text = io.TextIOWrapper(r, encoding="utf-8-sig", errors="replace", newline="")
-            reader = csv.DictReader(text)
-            n = m = 0
-            for row in reader:
-                n += 1
-                d = keys.get(str(row.get("instance_date", ""))[:10])
-                if d is not None:
-                    buckets[d].append(row)
-                    m += 1
-                if n % 2_000_000 == 0:
-                    log(f"  ..{n:,} rows scanned, {m} matched so far")
-            log(f"  done: {n:,} rows, {m} matched in this file")
+        r = http(url, timeout=3600, stream=True)
+        r.raw.decode_content = True
+        text = io.TextIOWrapper(r.raw, encoding="utf-8-sig", errors="replace", newline="")
+        reader = csv.DictReader(text)
+        n = m = 0
+        for row in reader:
+            n += 1
+            d = keys.get(str(row.get("instance_date", ""))[:10])
+            if d is not None:
+                buckets[d].append(row)
+                m += 1
+            if n % 2_000_000 == 0:
+                log(f"  ..{n:,} rows scanned, {m} matched so far")
+        log(f"  done: {n:,} rows, {m} matched in this file")
     log("matches per date: " + ", ".join(
         f"{d.isoformat()}:{len(v)}" for d, v in sorted(buckets.items()) if v))
     return buckets
@@ -237,6 +251,7 @@ def main():
     Path("data/history").mkdir(exist_ok=True)
 
     try:
+        warm_up()
         csv_urls = discover_csv_urls()
         buckets = collect_rows(csv_urls, needed)
     except Exception:
