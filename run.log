@@ -1,127 +1,21 @@
-=== DLD fetch for 2026-07-28 (YoY 2025-07-28; week 2026-07-22..2026-07-28) ===
-[1] gateway API
-HTTP 500 from https://gateway.dubailand.gov.ae/open-data/transactions
-  response body: <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Something went wrong — Dubailand</title>
-  <style>
-    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial; color:#222; background:#f7fafc; margin:0; display:flex; align-items:center; justify-content:center; min-height:100vh; }
-    .card { background:#fff; padding:28px; border-radius:12px; box-shadow: 0 6px 24px rgba(10,10,10,0.06); width:94%; max-width:720px; position:relative; }
-    h1 { margin:0 0 8px; color:#c53030; }
-    p { margin:8px 0 16px; line-height:1.4; }
-    .meta { font-size:0.9rem; color:#666; background:#f1f5f9; padding:10px; border-radius:6px; }
-    .actions { margin-top:16px; display:flex; gap:8px; }
-    a.btn { text-decoration:none; padding:8px 12px; border-radius:8px; background:#0f172a; color:#fff; }
-    a.link { color:#0f172a; text-decoration:underline; }
-    .footer { margin-top:28px; font-size:0.8rem; color:#999; text-align:center; }
-    @media (max-width:480px) { .card { padding:18px; } }
-  </style>
-</head>
-<body>
-  <div class="card" role="main" aria-labelledby="title">
-    <h1 id="title">Oops — something went wrong</h1>
-    <p>We’re very sorry, but something went wrong on our end. We are currently investigating the issue.</p>
-    <div class="actions">
-      <a class="btn" href="/">Go to homepage</a>
-    </div>
-
-    <p style="margin-top:14px; font-size:0.9rem; color:#666;">
-      Try re
-[1] gateway FAILED:
+=== DLD fetch for 2026-07-24 (YoY 2025-07-24; week 2026-07-18..2026-07-24) ===
+source: Data.Dubai dataset 470061 (Real Estate Transactions)
+file-list response: 246 bytes
+FETCH FAILED:
 Traceback (most recent call last):
-  File "/home/runner/work/mugen-dld-relay/mugen-dld-relay/fetch_dld.py", line 272, in main
-    rows = fetch_gateway(day, day)
-           ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/mugen-dld-relay/mugen-dld-relay/fetch_dld.py", line 132, in fetch_gateway
-    payload = gw_page(from_d, to_d, skip, PAGE_SIZE)
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/mugen-dld-relay/mugen-dld-relay/fetch_dld.py", line 110, in gw_page
-    with http(GATEWAY, json.dumps(body).encode(), h) as r:
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/mugen-dld-relay/mugen-dld-relay/fetch_dld.py", line 79, in http
-    return urllib.request.urlopen(req, timeout=timeout)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/urllib/request.py", line 215, in urlopen
-    return opener.open(url, data, timeout)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/urllib/request.py", line 521, in open
-    response = meth(req, response)
+  File "/home/runner/work/mugen-dld-relay/mugen-dld-relay/fetch_dld.py", line 240, in main
+    csv_urls = discover_csv_urls()
                ^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/urllib/request.py", line 630, in http_response
-    response = self.parent.error(
-               ^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/urllib/request.py", line 559, in error
-    return self._call_chain(*args)
-           ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/urllib/request.py", line 492, in _call_chain
-    result = func(*args)
-             ^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/urllib/request.py", line 639, in http_error_default
-    raise HTTPError(req.full_url, code, msg, hdrs, fp)
-urllib.error.HTTPError: HTTP Error 500: Internal Server Error
+  File "/home/runner/work/mugen-dld-relay/mugen-dld-relay/fetch_dld.py", line 94, in discover_csv_urls
+    payload = json.loads(raw)
+              ^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/json/decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/json/decoder.py", line 356, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
 
-[2] Dubai Pulse bulk CSV
-Request to https://www.dubaipulse.gov.ae/data/dld-transactions/dld_transactions-open failed: URLError: <urlopen error timed out>
-[2] pulse FAILED:
-Traceback (most recent call last):
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/urllib/request.py", line 1344, in do_open
-    h.request(req.get_method(), req.selector, req.data, headers,
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/http/client.py", line 1358, in request
-    self._send_request(method, url, body, headers, encode_chunked)
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/http/client.py", line 1404, in _send_request
-    self.endheaders(body, encode_chunked=encode_chunked)
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/http/client.py", line 1353, in endheaders
-    self._send_output(message_body, encode_chunked=encode_chunked)
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/http/client.py", line 1113, in _send_output
-    self.send(msg)
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/http/client.py", line 1057, in send
-    self.connect()
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/http/client.py", line 1492, in connect
-    super().connect()
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/http/client.py", line 1023, in connect
-    self.sock = self._create_connection(
-                ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/socket.py", line 865, in create_connection
-    raise exceptions[0]
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/socket.py", line 850, in create_connection
-    sock.connect(sa)
-TimeoutError: timed out
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/runner/work/mugen-dld-relay/mugen-dld-relay/fetch_dld.py", line 287, in main
-    buckets = fetch_pulse(set(week_days + week_days_ly))
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/mugen-dld-relay/mugen-dld-relay/fetch_dld.py", line 162, in fetch_pulse
-    url = find_pulse_csv_url()
-          ^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/mugen-dld-relay/mugen-dld-relay/fetch_dld.py", line 150, in find_pulse_csv_url
-    with http(PULSE_DATASET_PAGE, headers=BROWSER_HEADERS) as r:
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/mugen-dld-relay/mugen-dld-relay/fetch_dld.py", line 79, in http
-    return urllib.request.urlopen(req, timeout=timeout)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/urllib/request.py", line 215, in urlopen
-    return opener.open(url, data, timeout)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/urllib/request.py", line 515, in open
-    response = self._open(req, data)
-               ^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/urllib/request.py", line 532, in _open
-    result = self._call_chain(self.handle_open, protocol, protocol +
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/urllib/request.py", line 492, in _call_chain
-    result = func(*args)
-             ^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/urllib/request.py", line 1392, in https_open
-    return self.do_open(http.client.HTTPSConnection, req,
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/urllib/request.py", line 1347, in do_open
-    raise URLError(err)
-urllib.error.URLError: <urlopen error timed out>
-
-ALL SOURCES FAILED
