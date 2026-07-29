@@ -21,7 +21,7 @@ concurrency:
 jobs:
   pull:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
 
@@ -30,12 +30,20 @@ jobs:
           python-version: "3.12"
 
       - name: Fetch DLD open data and compute KPIs
-        run: python fetch_dld.py ${{ github.event.inputs.date }}
+        id: fetch
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python fetch_dld.py "${{ github.event.inputs.date }}" 2>&1 | tee run.log
 
-      - name: Commit data
+      - name: Commit data and log (always, so failures are diagnosable remotely)
         run: |
           git config user.name "dld-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add data/
-          git diff --cached --quiet || git commit -m "DLD data $(date -u +%F)"
+          git add -A data/ run.log
+          git diff --cached --quiet || git commit -m "DLD run $(date -u '+%F %H:%M') (${{ steps.fetch.outcome }})"
           git push
+
+      - name: Fail the run if the fetch failed
+        if: steps.fetch.outcome == 'failure'
+        run: exit 1
