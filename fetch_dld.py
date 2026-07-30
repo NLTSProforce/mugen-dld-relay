@@ -37,7 +37,12 @@ import urllib.parse
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
-import requests  # preinstalled on GitHub Actions runners
+try:
+    import requests
+except ModuleNotFoundError:  # self-bootstrap so the workflow never needs editing
+    import subprocess
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "--quiet", "requests"])
+    import requests
 
 PORTAL = "https://data.dubai"
 DATASET_ID = 470061  # "Real Estate Transactions" by Dubai Land Department
