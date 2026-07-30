@@ -1,5 +1,27 @@
+
+[notice] A new release of pip is available: 26.1.2 -> 26.2
+[notice] To update, run: pip install --upgrade pip
+=== DLD fetch for 2026-07-28 (YoY 2025-07-28; week 2026-07-22..2026-07-28) ===
+source: Data.Dubai dataset 470061 (Real Estate Transactions)
+warm-up GET https://data.dubai/en/l/470061 -> 200, 246 bytes, cookies: []
+file-list response: 246 bytes
+file-list response was not JSON; body starts with:
+<html><head><title>Request Rejected</title></head><body>The requested URL was rejected. Please consult with your administrator.<br><br>Your support ID is: 2831694023249749189<br><br><a href='javascript:history.back();'>[Go Back]</a></body></html>
+FETCH FAILED:
 Traceback (most recent call last):
-  File "/home/runner/work/mugen-dld-relay/mugen-dld-relay/fetch_dld.py", line 40, in <module>
-    import requests  # preinstalled on GitHub Actions runners
-    ^^^^^^^^^^^^^^^
-ModuleNotFoundError: No module named 'requests'
+  File "/home/runner/work/mugen-dld-relay/mugen-dld-relay/fetch_dld.py", line 260, in main
+    csv_urls = discover_csv_urls()
+               ^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/mugen-dld-relay/mugen-dld-relay/fetch_dld.py", line 109, in discover_csv_urls
+    payload = json.loads(raw)
+              ^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/json/decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/json/decoder.py", line 356, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
