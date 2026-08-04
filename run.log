@@ -1,12 +1,12 @@
 
 [notice] A new release of pip is available: 26.1.2 -> 26.2
 [notice] To update, run: pip install --upgrade pip
-=== DLD fetch for 2026-08-02 (YoY 2025-08-02; week 2026-07-27..2026-08-02) ===
+=== DLD fetch for 2026-08-03 (YoY 2025-08-03; week 2026-07-28..2026-08-03) ===
 source: Data.Dubai dataset 470061 (Real Estate Transactions)
 warm-up GET https://data.dubai/en/l/470061 -> 200, 246 bytes, cookies: []
 file-list response: 246 bytes
 file-list response was not JSON; body starts with:
-<html><head><title>Request Rejected</title></head><body>The requested URL was rejected. Please consult with your administrator.<br><br>Your support ID is: 2831694023202133032<br><br><a href='javascript:history.back();'>[Go Back]</a></body></html>
+<html><head><title>Request Rejected</title></head><body>The requested URL was rejected. Please consult with your administrator.<br><br>Your support ID is: 2831694023269974102<br><br><a href='javascript:history.back();'>[Go Back]</a></body></html>
 FETCH FAILED:
 Traceback (most recent call last):
   File "/home/runner/work/mugen-dld-relay/mugen-dld-relay/fetch_dld.py", line 260, in main
